@@ -5,7 +5,7 @@ const { ReadlineParser } = require('@serialport/parser-readline');
 const axios = require('axios');
 const app = express();
 
-    app.get('/api/hello1', (req, res) => {
+    app.get('/api/getweight', (req, res) => {
         const port = new SerialPort({
             path: 'COM1',
             baudRate: 9600
