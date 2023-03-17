@@ -23,7 +23,7 @@ const app = express();
 
     });
     app.get('/', (req, res) => {
-       res.send("node js deployed successfully")
+       res.send("node js deployed successfully!!")
 
     });
 
