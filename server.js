@@ -1,57 +1,36 @@
 const express = require('express');
-const mainRouter = require('./Route/mainrt')
-const dotenv = require('dotenv');
-const mongoose = require('mongoose');
-const path = require('path');
+const { SerialPort } = require('serialport');
+
+const { ReadlineParser } = require('@serialport/parser-readline');
+const axios = require('axios');
+const app = express();
+
+    app.get('/api/hello1', (req, res) => {
+        const port = new SerialPort({
+            path: 'COM1',
+            baudRate: 9600
+        });
+
+        const parser = port.pipe(new ReadlineParser({ delimiter: '\r\n' }));
+
+
+        parser.on('data', (data) => {
+            const payload = { data: data };
+            console.log(payload);
+            res.send(payload);
+        });
+
+
+    });
+    app.get('/', (req, res) => {
+       res.send("hello world")
+
+    });
+
+
+    app.listen(3000, () => {
+        console.log('Server listening on port 3000');
+    });
 
 
 
-const PORT = process.env.PORT || 9000;
-const app = express()
-const cors = require("cors");
-const bd = require("body-parser");
-
-
-app.use(cors());
-
-dotenv.config({path: './config.env'});
-
-const db = process.env.DATABASE;
-// console.log(process.env.DATABASE)
-
-mongoose.connect(db,{
-    
-    // useCreateIndex: true,
-    useNewUrlParser: true,
-    useUnifiedTopology: true,    
-
-}).then(()=>{
-    console.log(`connection successfull`)
-       
-}).catch((err)=>{
-    console.log(`connection not Successful`)
-})
-
-app.use(
-    bd.urlencoded({
-      extended: false,
-    })
-  );
-  app.use(bd.json());
-// app.use(urlParser);
-app.use(mainRouter)
-
-app.get('/',async(req,res)=>{
-    res.status(200).send("hello")
-})
-
-
-
-
-
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-
-app.listen(process.env.PORT,()=>{
-    console.log(`Server is running on ${PORT}`)
-})
