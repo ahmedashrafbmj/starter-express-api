@@ -350,7 +350,15 @@ const groupByFilters = async (req, res) => {
 const groupByStatus = async (req, res) => {
   try {
     const { query } = req.query;
-    const jqlQuery = `status = "${query}"`;
+    console.log(query,"queryqueryquery")
+    let jqlQuery ="";
+    if (query === "To do" || query === "In Progress" || query === "Done") {
+      jqlQuery = `status = "${query}"`;
+    } else {
+      jqlQuery = `duedate < now()`;
+    }
+    
+    console.log(jqlQuery,"jqlQuery")
     const searchResponse = await fetch(
       `https://proprint.atlassian.net/rest/api/2/search?jql=${encodeURIComponent(
         jqlQuery
