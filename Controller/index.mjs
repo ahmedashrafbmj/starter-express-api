@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 
-
+import fs from "fs"
 dotenv.config();
 
 const email = process.env.EMAIL;
@@ -71,9 +71,7 @@ const func2 = async (req, res) => {
       { name: "DV" },
       { name: "HIRE" },
     ];
-    const projectsDatas = projectsData.filter(
-      (eee) => !arr.some((e) => eee?.key === e?.name)
-    );
+    const projectsDatas = projectsData
 
     // Now, projectsDatas will contain objects from projectsData that do not have a key matching any name in arr.
 
@@ -85,7 +83,7 @@ const func2 = async (req, res) => {
       ).then((response) => response.json());
 
       const assignableUsersResponsePromise = fetch(
-        `https://proprint.atlassian.net/rest/api/2/user/assignable/search?project=${project.key}`,
+        `https://proprint.atlassian.net/rest/api/3/user/assignable/search?project=${project.key}`,
         fetchOptions
       ).then((response) => response.json());
 
@@ -95,6 +93,54 @@ const func2 = async (req, res) => {
       ]);
 
       return { projectDetails, assignableUsers };
+      // return { projectDetails };
+    });
+
+    const results = await Promise.all(requests);
+
+    res.json({
+      projectDetails: results.map((result) => result.projectDetails),
+      allAsignee: results.map((result) => result.assignableUsers),
+    });
+  } catch (error) {
+    console.error("Error fetching project details:", error);
+    res.status(500).json({ error: "Error fetching project details" });
+  }
+};
+const func3AllAssginee = async (req, res) => {
+  try {
+    const projectsResponse = await fetch(
+      "https://proprint.atlassian.net/rest/api/3/project",
+      fetchOptions
+    );
+    const projectsData = await projectsResponse.json();
+    const arr = [
+      { name: "BPDOT" },
+      { name: "CEOD" },
+      { name: "CEW" },
+      { name: "DV" },
+      { name: "HIRE" },
+    ];
+    const projectsDatas = projectsData.filter(
+      (eee) => !arr.some((e) => eee?.key === e?.name)
+    );
+
+    // Now, projectsDatas will contain objects from projectsData that do not have a key matching any name in arr.
+
+    console.log(projectsDatas, "projectsDatas");
+    const requests = projectsDatas?.map(async (project) => {
+    
+
+      const assignableUsersResponsePromise = fetch(
+        `https://proprint.atlassian.net/rest/api/3/user/assignable/search?project=${project.key}`,
+        fetchOptions
+      ).then((response) => response.json());
+
+      const [assignableUsers] = await Promise.all([
+        assignableUsersResponsePromise,
+      ]);
+
+      return { assignableUsers };
       // return { projectDetails };
     });
 
@@ -434,7 +480,34 @@ const groupByStatus = async (req, res) => {
 //     return res.status(500).json({ error: "Internal server error" });
 //   }
 // };
+const filesystem = async (req, res) => {
+  try {
+    const { ProjectId } = req.query;
+    const { issueId } = req.query;
+    console.log(issueId,ProjectId ,"queryqueryquery")
+    const fileName = `${ProjectId}.json`;
+    const data = {
+        issueId: issueId
+    };
 
+    fs.writeFile(fileName, JSON.stringify(data), 'utf8', (err) => {
+        if (err) {
+            console.error('Error creating JSON file:', err);
+        } else {
+            console.log(`File ${fileName} created successfully.`);
+        }
+    });
+    
+   
+  
+
+    
+
+  } catch (error) {
+    console.error("Error searching Jira:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
 export {
   func,
   search,
@@ -445,4 +518,6 @@ export {
   searchByProjectKey,
   searchByAssigneeName,
   groupByStatus,
+  func3AllAssginee,
+  filesystem
 };
