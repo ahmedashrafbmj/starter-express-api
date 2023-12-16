@@ -64,13 +64,7 @@ const func2 = async (req, res) => {
       fetchOptions
     );
     const projectsData = await projectsResponse.json();
-    const arr = [
-      { name: "BPDOT" },
-      { name: "CEOD" },
-      { name: "CEW" },
-      { name: "DV" },
-      { name: "HIRE" },
-    ];
+  
     const projectsDatas = projectsData
 
     // Now, projectsDatas will contain objects from projectsData that do not have a key matching any name in arr.
@@ -82,17 +76,13 @@ const func2 = async (req, res) => {
         fetchOptions
       ).then((response) => response.json());
 
-      const assignableUsersResponsePromise = fetch(
-        `https://proprint.atlassian.net/rest/api/3/user/assignable/search?project=${project.key}`,
-        fetchOptions
-      ).then((response) => response.json());
+    
 
-      const [projectDetails, assignableUsers] = await Promise.all([
+      const [projectDetails] = await Promise.all([
         projectResponsePromise,
-        assignableUsersResponsePromise,
       ]);
 
-      return { projectDetails, assignableUsers };
+      return { projectDetails };
       // return { projectDetails };
     });
 
@@ -100,7 +90,6 @@ const func2 = async (req, res) => {
 
     res.json({
       projectDetails: results.map((result) => result.projectDetails),
-      allAsignee: results.map((result) => result.assignableUsers),
     });
   } catch (error) {
     console.error("Error fetching project details:", error);
