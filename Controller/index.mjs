@@ -266,7 +266,7 @@ const searchByProjectKey = async (req, res) => {
     const apiUrl = `https://proprint.atlassian.net/rest/api/3/search?jql=${encodeURIComponent(
       jqlQuery
     )}`;
-
+console.log(apiUrl,"apiUrlapiUrl")
     const searchResponse = await fetch(apiUrl, {
       method: "GET",
       headers: {
@@ -288,8 +288,8 @@ const searchByProjectKey = async (req, res) => {
     // Return the search results
     return res.json(searchDataProjectKey);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.log(error);
+    return res.status(500).json({ error: "Internal Server Error",message:error });
   }
 };
 // const searchByProjectKey = async (req, res) => {
@@ -497,6 +497,31 @@ const filesystem = async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+// get all project name
+const projectName = async (req, res) => {
+  try {
+    const { query } = req.query;
+    const projects = await fetch(`https://proprint.atlassian.net/rest/api/2/project`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: authorizationHeader,
+          Accept: "application/json",
+        },
+      }
+    );
+
+    const projectsJson = await projects.json();
+    const projectNames = projectsJson?.map(project => project.name)
+    const projectKeys = projectsJson?.map(project => project.key)
+    return res.json({projectNames:projectNames,projectKeys :projectKeys });
+  } catch (error) {
+    console.error("Error searching Jira:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
 export {
   func,
   search,
@@ -508,5 +533,6 @@ export {
   searchByAssigneeName,
   groupByStatus,
   func3AllAssginee,
-  filesystem
+  filesystem,
+  projectName
 };

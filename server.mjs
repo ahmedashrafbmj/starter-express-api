@@ -101,6 +101,7 @@ app.use("/api/project-groupByfilter", projectRouter);
 app.use("/api/project-ProjectName", projectRouter);
 app.use("/api/project-key", projectRouter);
 app.use("/api/project-assigneeName", projectRouter);
+app.use("/api/projectNames", projectRouter);
 
 const port = 5000;
 app.listen(port, () => {

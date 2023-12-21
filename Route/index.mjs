@@ -13,6 +13,7 @@ import {
   groupByStatus,
   func3AllAssginee,
   filesystem,
+  projectName
 } from "../Controller/index.mjs";
 
 const router = express.Router();
@@ -28,6 +29,7 @@ router.get("/searchby-key", searchByProjectKey);
 router.get("/searchby-assigneeName", searchByAssigneeName);
 router.get("/all-assginee", func3AllAssginee);
 router.get("/filesystem", filesystem);
+router.get("/projectNames",projectName);
 
 
 export default router; // Export as default
