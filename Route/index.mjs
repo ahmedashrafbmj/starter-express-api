@@ -13,7 +13,8 @@ import {
   groupByStatus,
   func3AllAssginee,
   filesystem,
-  projectName
+  projectName,
+  func2SeacrhMultiPtoject
 } from "../Controller/index.mjs";
 
 const router = express.Router();
@@ -30,6 +31,7 @@ router.get("/searchby-assigneeName", searchByAssigneeName);
 router.get("/all-assginee", func3AllAssginee);
 router.get("/filesystem", filesystem);
 router.get("/projectNames",projectName);
+router.post("/func2SeacrhMultiPtoject",func2SeacrhMultiPtoject);
 
 
 export default router; // Export as default

@@ -514,12 +514,51 @@ const projectName = async (req, res) => {
     );
 
     const projectsJson = await projects.json();
-    const projectNames = projectsJson?.map(project => project.name)
+    const projectNames = projectsJson?.map(project => ({projectName:project.name,projectKeys:project.key}))
     const projectKeys = projectsJson?.map(project => project.key)
     return res.json({projectNames:projectNames,projectKeys :projectKeys });
   } catch (error) {
     console.error("Error searching Jira:", error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+const func2SeacrhMultiPtoject = async (req, res) => {
+  try {
+    const projectsResponse = await fetch(
+      "https://proprint.atlassian.net/rest/api/3/project",
+      fetchOptions
+    );
+    const projectsData = await projectsResponse.json();
+  
+    const projectsDatas = projectsData
+
+    // Now, projectsDatas will contain objects from projectsData that do not have a key matching any name in arr.
+
+    console.log(projectsDatas, "projectsDatas");
+    const requests = projectsDatas?.map(async (project) => {
+      const projectResponsePromise = fetch(
+        `https://proprint.atlassian.net/rest/api/3/search?jql=project=${project.key}`,
+        fetchOptions
+      ).then((response) => response.json());
+
+    
+
+      const [projectDetails] = await Promise.all([
+        projectResponsePromise,
+      ]);
+
+      return { projectDetails };
+      // return { projectDetails };
+    });
+
+    const results = await Promise.all(requests);
+
+    res.json({
+      projectDetails: results.map((result) => result.projectDetails),
+    });
+  } catch (error) {
+    console.error("Error fetching project details:", error);
+    res.status(500).json({ error: "Error fetching project details" });
   }
 };
 export {
@@ -534,5 +573,6 @@ export {
   groupByStatus,
   func3AllAssginee,
   filesystem,
-  projectName
+  projectName,
+  func2SeacrhMultiPtoject
 };
