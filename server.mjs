@@ -3,8 +3,10 @@ import express from "express";
 import cors from "cors";
 import projectRouter from "./Route/index.mjs";
 const app = express();
+import multer from "multer";
+const upload  = multer()
 app.use(cors());
-
+app.use(express.json());
 // app.get("/jira-ALLProject", async (req, res) => {
 //   try {
 //     const response = await fetch(
@@ -103,6 +105,8 @@ app.use("/api/project-key", projectRouter);
 app.use("/api/project-assigneeName", projectRouter);
 app.use("/api/projectNames", projectRouter);
 app.use("/api/func2SeacrhMultiPtoject", projectRouter);
+app.use("/api/pagination", projectRouter);
+// app.use("/api/user", projectRouter);
 
 const port = 5000;
 app.listen(port, () => {

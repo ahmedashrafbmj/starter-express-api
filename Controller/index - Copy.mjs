@@ -10,14 +10,24 @@ const apiToken = process.env.Token;
 const authorizationHeader = `Basic ${Buffer.from(
   `${email}:${apiToken}`
 ).toString("base64")}`;
-
+console.log(authorizationHeader,"authorizationHeader")
 const fetchOptions = {
-  method: "GET",
+  method: "POST",
   headers: {
     Authorization: authorizationHeader,
     Accept: "application/json",
-  },
+  }, body: JSON.stringify({
+    username:"zain@nixaam.com",
+    password:"zain@123",
+  }),
 };
+// const fetchOptionsPost = {
+//   method: "POST",
+//   headers: {
+//     Authorization: authorizationHeader,
+//     Accept: "application/json",
+//   },
+// };
 
 const func = async (req, res) => {
   try {
@@ -57,6 +67,78 @@ const func = async (req, res) => {
     res.status(500).json({ error: "Error fetching project details" });
   }
 };
+
+
+// const fetchOptionsPost = {
+//   method: 'POST',
+//   headers: {
+//     Authorization: authHeader,
+//     Accept: 'application/json',
+//     'Content-Type': 'application/json',
+//   },
+//   body: JSON.stringify({
+//     username,
+//     password,
+//   }),
+// };
+// const Login = async (req, res) => {
+//   const username = "srzafar1@gmail.com";
+//   const password = "zain@123";
+// const StringfyBody =  JSON.stringify({
+//   username,
+//   password,
+// })
+// console.log(StringfyBody,"StringfyBody")
+
+//   const authorizationHeader = `Basic ${Buffer.from(`${process.env.EMAIL}:${process.env.Token}`).toString('base64')}`;
+
+//   const fetchOptions = {
+//     method: "POST",
+//     headers: {
+//       Authorization: authorizationHeader,
+//       Accept: "application/json",
+//       "Content-Type": "application/json",
+//     },
+//     body: StringfyBody,
+//   };
+
+//   try {
+//     // Login to Jira
+//     const url = 'https://proprint.atlassian.net/rest/auth/1/session';
+//     // const url = 'https://proprint.atlassian.net/rest/auth/1/session';
+//     const response = await fetch(url, fetchOptions);
+// console.log(response,"response")
+//     if (response) {
+//       const contentType = response.headers.get('content-type');
+
+//       if (contentType && contentType.includes('application/json')) {
+//         const session = await response.json();
+//         console.log('Successfully logged in, session:', session);
+//         res.json({ success: true, session });
+//       } else {
+//         console.error('Error during login: Unexpected response content type');
+//         res.status(500).json({ success: false, error: 'Unexpected response content type' });
+//       }
+//     } else {
+//       const errorMessage = await response.text();
+//       try {
+//         const errorObj = JSON.parse(errorMessage);
+//         console.error('Error during login:', errorObj);
+//         res.status(response.status).json({ success: false, error: errorObj });
+//       } catch (parseError) {
+//         console.error('Error parsing error message as JSON:', parseError);
+//         res.status(response.status).json({ success: false, error: errorMessage });
+//       }
+//     }
+//   } catch (error) {
+//     console.error('Error during login:', error);
+//     res.status(500).json({ success: false, error: 'Internal Server Error' });
+//   }
+// };
+
+
+
+
 const func2 = async (req, res) => {
   try {
     const projectsResponse = await fetch(
@@ -96,28 +178,6 @@ const func2 = async (req, res) => {
     res.status(500).json({ error: "Error fetching project details" });
   }
 };
-const pagination = async (req, res) => {
-  try {
-   
-    const { query,min,max } = req.query;
-const url = `https://proprint.atlassian.net/rest/api/3/search?jql=project=${query}&startAt=${min}&maxResults=${max}`
-console.log(url,"urlurlurlurl")
-    const requests = fetch(
-      url,
-      fetchOptions
-    ).then((response) => response.json());
-
-    const results = await requests;
-// const 
-    res.json({
-      projectDetails:[results],
-      projectLength:results?.issues?.length,
-    });
-  } catch (error) {
-    console.error("Error fetching project details:", error);
-    res.status(500).json({ error: "Error fetching project details" });
-  }
-};
 const func3AllAssginee = async (req, res) => {
   try {
     const projectsResponse = await fetch(
@@ -125,31 +185,33 @@ const func3AllAssginee = async (req, res) => {
       fetchOptions
     );
     const projectsData = await projectsResponse.json();
-    const arr = [
-      { name: "BPDOT" },
-      { name: "CEOD" },
-      { name: "CEW" },
-      { name: "DV" },
-      { name: "HIRE" },
-    ];
-    const projectsDatas = projectsData.filter(
-      (eee) => !arr.some((e) => eee?.key === e?.name)
-    );
+    // const arr = [
+    //   { name: "BPDOT" },
+    //   { name: "CEOD" },
+    //   { name: "CEW" },
+    //   { name: "DV" },
+    //   { name: "HIRE" },
+    //   { name: "TW" },
+    //   { name: "PROPR" },
+    // ];
+    // const projectsDatas = projectsData.filter(
+    //   (eee) => !arr.some((e) => eee?.key === e?.name)
+    // );
 
     // Now, projectsDatas will contain objects from projectsData that do not have a key matching any name in arr.
 
-    console.log(projectsDatas, "projectsDatas");
-    const requests = projectsDatas?.map(async (project) => {
+    // console.log(projectsDatas, "projectsDatas");
+    const requests = projectsData?.map(async (project) => {
     
 
       const assignableUsersResponsePromise = fetch(
         `https://proprint.atlassian.net/rest/api/3/user/assignable/search?project=${project.key}`,
         fetchOptions
       ).then((response) => response.json());
-
       const [assignableUsers] = await Promise.all([
         assignableUsersResponsePromise,
       ]);
+      console.log(assignableUsers.length,"assignableUsers.length")
 
       return { assignableUsers };
       // return { projectDetails };
@@ -597,5 +659,5 @@ export {
   filesystem,
   projectName,
   func2SeacrhMultiPtoject,
-  pagination
+  // Login
 };
